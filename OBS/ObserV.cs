@@ -4,125 +4,69 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Observer.OBS
 {
     public class ObserV
     {
         public class Run
         {
-            Stock stock = new Stock();
-
-            Bank bank = new Bank("ЮнитБанк", stock);
-            Broker broker = new Broker("Иван Иваныч", stock);
-            // имитация торгов
-                stock.Market();
-        // брокер прекращает наблюдать за торгами
-             broker.StopTrade();
-        // имитация торгов
-              stock.Market();
- 
-              Console.Read();
+            ConcreteObserver observer1 = new ConcreteObserver("Jon", "rain");
+            ConcreteObserver observer2 = new ConcreteObserver("Bill", "snow");
+            
         }
-        interface IObserver
+        interface IObservableWeather
         {
-            void Update(Object ob);
-        }
-
-        interface IObservable
-        {
-            void RegisterObserver(IObserver o);
-            void RemoveObserver(IObserver o);
+            void AddObserver(Meteorologist o);
+            void RemoveObserver(Meteorologist o);
             void NotifyObservers();
         }
-
-        public class Stock : IObservable
+        class ConcreteObservable : IObservableWeather
         {
-            StockInfo sInfo; // информация о торгах
-
-            List<IObserver> observers;
-            public Stock()
+            private List<Meteorologist> observers;
+            public ConcreteObservable()
             {
-                observers = new List<IObserver>();
-                sInfo = new StockInfo();
+                observers = new List<Meteorologist>();
             }
-            public void RegisterObserver(IObserver o)
+            public void AddObserver(Meteorologist o)
             {
                 observers.Add(o);
             }
 
-            public void RemoveObserver(IObserver o)
+            public void RemoveObserver(Meteorologist o)
             {
                 observers.Remove(o);
             }
 
             public void NotifyObservers()
             {
-                foreach (IObserver o in observers)
-                {
-                    o.Update(sInfo);
-                }
-            }
-
-            public void Market()
-            {
-                Random rnd = new Random();
-                sInfo.USD = rnd.Next(20, 40);
-                sInfo.Euro = rnd.Next(30, 50);
-                NotifyObservers();
+                foreach (Meteorologist observer in observers)
+                    observer.Update();
             }
         }
 
-        public class StockInfo
+        interface Meteorologist
         {
-            public int USD { get; set; }
-            public int Euro { get; set; }
+            void Update();
         }
-
-        class Broker : IObserver
+        public class ConcreteObserver : Meteorologist
         {
-            public string Name { get; set; }
-            IObservable stock;
-            public Broker(string name, IObservable obs)
+            private string Name { get; set; } = null;
+            private string Phenomenon { get; set; } = null;
+            public ConcreteObserver(string name, string phenomenon)
             {
-                this.Name = name;
-                stock = obs;
-                stock.RegisterObserver(this);
+                Name = name;
+                Phenomenon = phenomenon;
             }
-            public void Update(object ob)
+            public override string ToString()
             {
-                StockInfo sInfo = (StockInfo)ob;
+                return $"Name" + " " + "Phenomenon";
+            }
 
-                if (sInfo.USD > 30)
-                    Console.WriteLine("Брокер {0} продает доллары;  Курс доллара: {1}", this.Name, sInfo.USD);
-                else
-                    Console.WriteLine("Брокер {0} покупает доллары;  Курс доллара: {1}", this.Name, sInfo.USD);
-            }
-            public void StopTrade()
+            public void Update()
             {
-                stock.RemoveObserver(this);
-                stock = null;
-            }
-        }
-
-        public class Bank : IObserver
-        {
-            public string Name { get; set; }
-            IObservable stock;
-            public Bank(string name, IObservable obs)
-            {
-                this.Name = name;
-                stock = obs;
-                stock.RegisterObserver(this);
-            }
-            public void Update(object ob)
-            {
-                StockInfo sInfo = (StockInfo)ob;
-
-                if (sInfo.Euro > 40)
-                    Console.WriteLine("Банк {0} продает евро;  Курс евро: {1}", this.Name, sInfo.Euro);
-                else
-                    Console.WriteLine("Банк {0} покупает евро;  Курс евро: {1}", this.Name, sInfo.Euro);
             }
         }
     }
+
 }
