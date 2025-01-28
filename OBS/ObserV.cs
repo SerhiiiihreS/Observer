@@ -3,17 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace Observer.OBS
 {
     public class ObserV
     {
-        public class Run
+        public void Run()
         {
-            ConcreteObserver observer1 = new ConcreteObserver("Jon", "rain");
-            ConcreteObserver observer2 = new ConcreteObserver("Bill", "snow");
-            
+            Weather weather = new Weather();
+            ConcreteObserver observer1 = new ("Jon", 32);
+            ConcreteObserver observer2 = new("Bill", 41);
+            ConcreteObserver observer3 = new("Anna", 51);
+            weather.AddObserver(observer1);
+            weather.AddObserver(observer2);
+            weather.AddObserver(observer3);
+            weather.NotifyObservers();
+            Console.WriteLine("-----------------------------------------");
+            Console.WriteLine("-----------------------------------------");
+            weather.RemoveObserver(observer1);
+            weather.NotifyObservers();
         }
         interface IObservableWeather
         {
@@ -21,10 +31,10 @@ namespace Observer.OBS
             void RemoveObserver(Meteorologist o);
             void NotifyObservers();
         }
-        class ConcreteObservable : IObservableWeather
+        class Weather : IObservableWeather
         {
             private List<Meteorologist> observers;
-            public ConcreteObservable()
+            public Weather()
             {
                 observers = new List<Meteorologist>();
             }
@@ -41,7 +51,13 @@ namespace Observer.OBS
             public void NotifyObservers()
             {
                 foreach (Meteorologist observer in observers)
+                {
+                    
+                    Console.WriteLine(observer);
                     observer.Update();
+                    Console.WriteLine("-----------------------------------------");
+                }
+                    
             }
         }
 
@@ -52,21 +68,18 @@ namespace Observer.OBS
         public class ConcreteObserver : Meteorologist
         {
             private string Name { get; set; } = null;
-            private string Phenomenon { get; set; } = null;
-            public ConcreteObserver(string name, string phenomenon)
+            private int Age { get; set; }
+            public ConcreteObserver(string name, int age)
             {
                 Name = name;
-                Phenomenon = phenomenon;
+                Age = age;
             }
-            public override string ToString()
-            {
-                return $"Name" + " " + "Phenomenon";
-            }
+            public override string ToString() => $"{Name}\r\n {Age}\r\n";
 
             public void Update()
             {
+                Console.WriteLine("It's going to rain from 2 to 6 today! You should take an umbrella!");
             }
         }
     }
-
 }

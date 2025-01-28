@@ -1,4 +1,4 @@
 ﻿
 using Observer.OBS;
 
-new ObserV.Run();
+new ObserV().Run();
